@@ -28,6 +28,19 @@ def mask_to_bbox(mask):
         bboxes.append((x, y, x + w, y + h))
     return bboxes
 
+def display_image_with_mask(image_path, json_path,output_path):
+    image = cv2.imread(image_path)
+    json_data = load_json(json_path)
+    mask = json_to_mask(json_data)
+    # draw contours of the mask on the image
+    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    for cnt in contours:
+        cv2.drawContours(image, [cnt], -1, (0, 255, 0), 2)
+    # save the image with mask
+    basename = os.path.basename(image_path)
+    output_image_path = os.path.join(output_path, basename)
+    cv2.imwrite(output_image_path, image)
+    
 
 
 class DefectSegmentationDataset(Dataset):
